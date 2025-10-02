@@ -1,0 +1,50 @@
+name: yatzy_tr
+description: A production-ready cross-platform Yatzy game app for Android and iOS
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State Management
+  hooks_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+
+  # Routing
+  go_router: ^13.0.0
+
+  # Persistence
+  shared_preferences: ^2.2.2
+
+  # Internationalization
+  intl: ^0.20.2
+
+  # Assets
+  flutter_svg: ^2.0.9
+
+  # Animations
+  flutter_animate: ^4.5.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  riverpod_generator: ^2.3.9
+  build_runner: ^2.4.7
+  custom_lint: ^0.5.7
+  riverpod_lint: ^2.3.7
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/icons/
+    - assets/splash/
+
+  generate: true

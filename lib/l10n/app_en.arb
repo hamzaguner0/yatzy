@@ -1,0 +1,153 @@
+{
+  "@@locale": "en",
+  "appTitle": "Yatzy TR",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+
+  "homePlaySolo": "Play Solo",
+  "@homePlaySolo": {
+    "description": "Button to start a solo game"
+  },
+
+  "homePassAndPlay": "Pass & Play",
+  "@homePassAndPlay": {
+    "description": "Button to start a pass and play game"
+  },
+
+  "homeSettings": "Settings",
+  "@homeSettings": {
+    "description": "Button to open settings"
+  },
+
+  "homeHowToPlay": "How to Play",
+  "@homeHowToPlay": {
+    "description": "Button to view game rules"
+  },
+
+  "homeContinueGame": "Continue Game",
+  "@homeContinueGame": {
+    "description": "Button to resume saved game"
+  },
+
+  "difficultyEasy": "Easy",
+  "difficultyNormal": "Normal",
+  "difficultyHard": "Hard",
+
+  "setupTitle": "Game Setup",
+  "setupNumPlayers": "Number of Players",
+  "setupPlayerName": "Player {number}",
+  "@setupPlayerName": {
+    "description": "Label for player name input",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+
+  "setupAIOpponent": "AI Opponent",
+  "setupDifficulty": "Difficulty",
+  "setupStartGame": "Start Game",
+
+  "gameRound": "Round {current} of {total}",
+  "@gameRound": {
+    "description": "Current round indicator",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "gameTurn": "{playerName}'s Turn",
+  "@gameTurn": {
+    "description": "Indicates whose turn it is",
+    "placeholders": {
+      "playerName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "gameRollsLeft": "{count} rolls left",
+  "@gameRollsLeft": {
+    "description": "Number of rolls remaining",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "gameRollDice": "Roll Dice",
+  "gameTapToHold": "Tap dice to hold",
+  "gameSelectCategory": "Select a category",
+
+  "category_ones": "Ones",
+  "category_twos": "Twos",
+  "category_threes": "Threes",
+  "category_fours": "Fours",
+  "category_fives": "Fives",
+  "category_sixes": "Sixes",
+  "category_three_of_a_kind": "Three of a Kind",
+  "category_four_of_a_kind": "Four of a Kind",
+  "category_full_house": "Full House",
+  "category_small_straight": "Small Straight",
+  "category_large_straight": "Large Straight",
+  "category_chance": "Chance",
+  "category_yahtzee": "Yahtzee",
+
+  "scoreUpperSection": "Upper Section",
+  "scoreLowerSection": "Lower Section",
+  "scoreSubtotal": "Subtotal",
+  "scoreBonus": "Bonus (63+)",
+  "scoreUpperTotal": "Upper Total",
+  "scoreLowerTotal": "Lower Total",
+  "scoreGrandTotal": "Grand Total",
+
+  "resultsTitle": "Game Over!",
+  "resultsWinner": "{playerName} wins!",
+  "@resultsWinner": {
+    "description": "Winner announcement",
+    "placeholders": {
+      "playerName": {
+        "type": "String"
+      }
+    }
+  },
+  "resultsPlayAgain": "Play Again",
+  "resultsMainMenu": "Main Menu",
+
+  "settingsTitle": "Settings",
+  "settingsLanguage": "Language",
+  "settingsTheme": "Theme",
+  "settingsThemeSystem": "System",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "settingsSound": "Sound Effects",
+  "settingsHaptics": "Haptics",
+  "settingsVariants": "Game Variants",
+  "settingsJokerRules": "Joker Rules",
+  "settingsMultipleYahtzees": "Multiple Yahtzees",
+  "settingsRngSeed": "RNG Seed (for testing)",
+
+  "rulesTitle": "How to Play",
+  "rulesObjective": "Objective",
+  "rulesObjectiveText": "Score the most points by rolling five dice to make specific combinations.",
+  "rulesGameplay": "Gameplay",
+  "rulesGameplayText": "Each turn, roll up to 3 times. After each roll, you can hold dice you want to keep. After your rolls, choose a category to score.",
+  "rulesCategories": "Categories",
+  "rulesCategoriesText": "Upper section: Score sum of specific numbers (Ones through Sixes). Get 63+ for a 35 point bonus!\n\nLower section: Score combinations like Three of a Kind (sum of all dice), Full House (25), Straights (30-40), and Yahtzee (50 - all five dice the same).",
+  "rulesScoring": "Scoring",
+  "rulesScoringText": "Each category can only be used once. If you can't or don't want to score, you can scratch a category (score 0).",
+
+  "commonOk": "OK",
+  "commonCancel": "Cancel",
+  "commonClose": "Close",
+  "commonSave": "Save",
+  "commonDelete": "Delete"
+}
