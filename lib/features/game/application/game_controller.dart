@@ -8,10 +8,11 @@ final scoringEngineProvider = Provider<ScoringEngine>((ref) {
   return const ScoringEngine();
 });
 
-/// Provider for the RNG instance
-final rngProvider = Provider<RNG>((ref) {
-  final state = ref.watch(gameStateProvider);
-  return RNG(seed: state.settings.seed);
+typedef RngFactory = RNG Function({int? seed});
+
+/// Provider for RNG factory functions
+final rngProvider = Provider<RngFactory>((ref) {
+  return ({int? seed}) => RNG(seed: seed);
 });
 
 /// Main game state provider
@@ -19,7 +20,7 @@ final gameStateProvider =
     StateNotifierProvider<GameController, GameState>((ref) {
   return GameController(
     scoringEngine: ref.watch(scoringEngineProvider),
-    rng: ref.watch(rngProvider),
+    rngFactory: ref.watch(rngProvider),
   );
 });
 
@@ -27,9 +28,10 @@ final gameStateProvider =
 class GameController extends StateNotifier<GameState> {
   GameController({
     required ScoringEngine scoringEngine,
-    required RNG rng,
+    required RngFactory rngFactory,
   })  : _scoringEngine = scoringEngine,
-        _rng = rng,
+        _rngFactory = rngFactory,
+        _rng = rngFactory(),
         super(
           const GameState(
             phase: GamePhase.menu,
@@ -39,7 +41,8 @@ class GameController extends StateNotifier<GameState> {
         );
 
   final ScoringEngine _scoringEngine;
-  final RNG _rng;
+  final RngFactory _rngFactory;
+  RNG _rng;
 
   /// Start a new game with given settings and players
   void startGame({
@@ -48,6 +51,8 @@ class GameController extends StateNotifier<GameState> {
   }) {
     assert(players.isNotEmpty, 'Must have at least one player');
     assert(players.length <= 6, 'Cannot have more than 6 players');
+
+    _rng = _rngFactory(seed: settings.seed);
 
     // Initialize dice
     final dice = List.generate(
