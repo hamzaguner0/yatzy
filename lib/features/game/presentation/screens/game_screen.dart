@@ -214,7 +214,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   void _checkAITurn() async {
-    final gameState = ref.read(gameStateProvider);
+    var gameState = ref.read(gameStateProvider);
 
     if (gameState.phase != GamePhase.playing) return;
     if (!gameState.activePlayer.isAI) return;
@@ -228,7 +228,12 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     final aiPolicy = aiFactory.createPolicy(gameState.activePlayer.difficulty);
 
     // AI rolling phase
-    while (gameState.canRoll) {
+    while (true) {
+      gameState = ref.read(gameStateProvider);
+      if (!gameState.canRoll) {
+        break;
+      }
+
       final decision = aiPolicy.decideKeep(
         dice: gameState.dice,
         scoreCard: gameState.activeScoreCard,
@@ -243,6 +248,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
         await Future.delayed(const Duration(milliseconds: 500));
         ref.read(gameStateProvider.notifier).setDiceHold(decision.diceToKeep);
+        gameState = ref.read(gameStateProvider);
       } else {
         break;
       }
@@ -250,21 +256,26 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
     // AI category selection
     await Future.delayed(const Duration(milliseconds: 800));
+    gameState = ref.read(gameStateProvider);
     final categoryDecision = aiPolicy.decideCategory(
       dice: gameState.dice,
       scoreCard: gameState.activeScoreCard,
     );
 
     if (mounted) {
-      ref.read(gameStateProvider.notifier).chooseCategory(categoryDecision.category);
+      ref
+          .read(gameStateProvider.notifier)
+          .chooseCategory(categoryDecision.category);
       await ref.read(persistenceProvider).saveGame(ref.read(gameStateProvider));
 
-      // Check if next player is also AI
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (mounted) {
-          _checkAITurn();
-        }
-      });
+      gameState = ref.read(gameStateProvider);
+      if (gameState.phase == GamePhase.playing && gameState.activePlayer.isAI) {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            _checkAITurn();
+          }
+        });
+      }
     }
   }
 
