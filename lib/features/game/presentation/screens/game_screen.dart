@@ -47,7 +47,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
     final activePlayer = gameState.activePlayer;
     final scoreCard = gameState.activeScoreCard;
-    final potentialScores = ref.read(gameStateProvider.notifier).getPotentialScores();
+    final potentialScores =
+        ref.read(gameStateProvider.notifier).getPotentialScores();
 
     return PopScope(
       canPop: false,
@@ -115,13 +116,17 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                             ),
                           ),
 
-                        if (!gameState.canRoll && gameState.hasRolled && !activePlayer.isAI)
+                        if (!gameState.canRoll &&
+                            gameState.hasRolled &&
+                            !activePlayer.isAI)
                           Text(
                             l10n.gameSelectCategory,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                           ),
 
                         if (activePlayer.isAI)
@@ -214,25 +219,31 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   void _checkAITurn() async {
-    var gameState = ref.read(gameStateProvider);
+    // En güncel state'i her adımda yeniden okuyacağız
+    GameState gameState = ref.read(gameStateProvider);
 
-    if (gameState.phase != GamePhase.playing) return;
-    if (!gameState.activePlayer.isAI) return;
+    bool shouldContinue(GameState state) =>
+        state.phase == GamePhase.playing && state.activePlayer.isAI;
 
-    // AI turn
+    if (!shouldContinue(gameState)) return;
+
+    // UI güncellensin
     await Future.delayed(const Duration(milliseconds: 500));
+
+    gameState = ref.read(gameStateProvider);
+    if (!shouldContinue(gameState)) return;
 
     final rng = RNG(seed: gameState.settings.seed);
     final scoringEngine = ref.read(scoringEngineProvider);
     final aiFactory = AIFactory(scoringEngine: scoringEngine, rng: rng);
-    final aiPolicy = aiFactory.createPolicy(gameState.activePlayer.difficulty);
+    final aiPolicy =
+        aiFactory.createPolicy(gameState.activePlayer.difficulty);
 
-    // AI rolling phase
+    // AI'nın zar atma fazı
     while (true) {
       gameState = ref.read(gameStateProvider);
-      if (!gameState.canRoll) {
-        break;
-      }
+      if (!shouldContinue(gameState)) return;
+      if (!gameState.canRoll) break;
 
       final decision = aiPolicy.decideKeep(
         dice: gameState.dice,
@@ -241,41 +252,44 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         maxRolls: gameState.settings.rollsPerTurn,
       );
 
-      if (decision.shouldRoll && gameState.canRoll) {
-        await Future.delayed(const Duration(milliseconds: 800));
-        ref.read(gameStateProvider.notifier).rollDice();
-        await ref.read(persistenceProvider).saveGame(ref.read(gameStateProvider));
+      if (!decision.shouldRoll || !gameState.canRoll) break;
 
-        await Future.delayed(const Duration(milliseconds: 500));
-        ref.read(gameStateProvider.notifier).setDiceHold(decision.diceToKeep);
-        gameState = ref.read(gameStateProvider);
-      } else {
-        break;
-      }
+      await Future.delayed(const Duration(milliseconds: 500));
+      ref.read(gameStateProvider.notifier).setDiceHold(decision.diceToKeep);
+      gameState = ref.read(gameStateProvider);
+      if (!shouldContinue(gameState) || !gameState.canRoll) break;
+
+      await Future.delayed(const Duration(milliseconds: 800));
+      ref.read(gameStateProvider.notifier).rollDice();
+      gameState = ref.read(gameStateProvider);
+      await ref.read(persistenceProvider).saveGame(gameState);
     }
 
-    // AI category selection
     await Future.delayed(const Duration(milliseconds: 800));
     gameState = ref.read(gameStateProvider);
+    if (!shouldContinue(gameState)) return;
+
     final categoryDecision = aiPolicy.decideCategory(
       dice: gameState.dice,
       scoreCard: gameState.activeScoreCard,
     );
 
-    if (mounted) {
-      ref
-          .read(gameStateProvider.notifier)
-          .chooseCategory(categoryDecision.category);
-      await ref.read(persistenceProvider).saveGame(ref.read(gameStateProvider));
+    if (!mounted) return;
 
-      gameState = ref.read(gameStateProvider);
-      if (gameState.phase == GamePhase.playing && gameState.activePlayer.isAI) {
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted) {
-            _checkAITurn();
-          }
-        });
-      }
+    ref
+        .read(gameStateProvider.notifier)
+        .chooseCategory(categoryDecision.category);
+
+    gameState = ref.read(gameStateProvider);
+    await ref.read(persistenceProvider).saveGame(gameState);
+
+    // Sıradaki oyuncu yine AI ise döngüyü sürdür
+    if (shouldContinue(gameState)) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          _checkAITurn();
+        }
+      });
     }
   }
 
@@ -284,7 +298,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Exit Game?'),
-        content: const Text('Your progress will be saved. You can resume later.'),
+        content: const Text(
+            'Your progress will be saved. You can resume later.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
