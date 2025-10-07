@@ -214,13 +214,18 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   void _checkAITurn() async {
-    final gameState = ref.read(gameStateProvider);
+    GameState gameState = ref.read(gameStateProvider);
 
-    if (gameState.phase != GamePhase.playing) return;
-    if (!gameState.activePlayer.isAI) return;
+    bool shouldContinue(GameState state) =>
+        state.phase == GamePhase.playing && state.activePlayer.isAI;
 
-    // AI turn
+    if (!shouldContinue(gameState)) return;
+
+    // Allow UI to update before the AI acts.
     await Future.delayed(const Duration(milliseconds: 500));
+
+    gameState = ref.read(gameStateProvider);
+    if (!shouldContinue(gameState)) return;
 
     final rng = RNG(seed: gameState.settings.seed);
     final scoringEngine = ref.read(scoringEngineProvider);
@@ -228,7 +233,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     final aiPolicy = aiFactory.createPolicy(gameState.activePlayer.difficulty);
 
     // AI rolling phase
-    while (gameState.canRoll) {
+    while (true) {
+      gameState = ref.read(gameStateProvider);
+      if (!shouldContinue(gameState)) return;
+      if (!gameState.canRoll) break;
+
       final decision = aiPolicy.decideKeep(
         dice: gameState.dice,
         scoreCard: gameState.activeScoreCard,
@@ -236,30 +245,42 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         maxRolls: gameState.settings.rollsPerTurn,
       );
 
-      if (decision.shouldRoll && gameState.canRoll) {
-        await Future.delayed(const Duration(milliseconds: 800));
-        ref.read(gameStateProvider.notifier).rollDice();
-        await ref.read(persistenceProvider).saveGame(ref.read(gameStateProvider));
-
-        await Future.delayed(const Duration(milliseconds: 500));
-        ref.read(gameStateProvider.notifier).setDiceHold(decision.diceToKeep);
-      } else {
+      if (!decision.shouldRoll || !gameState.canRoll) {
         break;
       }
+
+      await Future.delayed(const Duration(milliseconds: 500));
+      ref.read(gameStateProvider.notifier).setDiceHold(decision.diceToKeep);
+      gameState = ref.read(gameStateProvider);
+      if (!shouldContinue(gameState) || !gameState.canRoll) {
+        break;
+      }
+
+      await Future.delayed(const Duration(milliseconds: 800));
+      ref.read(gameStateProvider.notifier).rollDice();
+      gameState = ref.read(gameStateProvider);
+      await ref.read(persistenceProvider).saveGame(gameState);
     }
 
-    // AI category selection
     await Future.delayed(const Duration(milliseconds: 800));
+    gameState = ref.read(gameStateProvider);
+    if (!shouldContinue(gameState)) return;
+
     final categoryDecision = aiPolicy.decideCategory(
       dice: gameState.dice,
       scoreCard: gameState.activeScoreCard,
     );
 
-    if (mounted) {
-      ref.read(gameStateProvider.notifier).chooseCategory(categoryDecision.category);
-      await ref.read(persistenceProvider).saveGame(ref.read(gameStateProvider));
+    if (!mounted) return;
 
-      // Check if next player is also AI
+    ref
+        .read(gameStateProvider.notifier)
+        .chooseCategory(categoryDecision.category);
+
+    gameState = ref.read(gameStateProvider);
+    await ref.read(persistenceProvider).saveGame(gameState);
+
+    if (shouldContinue(gameState)) {
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {
           _checkAITurn();
