@@ -7,14 +7,14 @@ import 'package:yatzy_tr/features/game/domain/scoring_engine.dart';
 void main() {
   late GameController controller;
   late ScoringEngine scoringEngine;
-  late RNG rng;
+  late RngFactory rngFactory;
 
   setUp(() {
     scoringEngine = const ScoringEngine();
-    rng = RNG(seed: 42); // Deterministic seed
+    rngFactory = ({int? seed}) => RNG(seed: seed);
     controller = GameController(
       scoringEngine: scoringEngine,
-      rng: rng,
+      rngFactory: rngFactory,
     );
   });
 
