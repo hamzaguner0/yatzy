@@ -24,14 +24,13 @@ void main() {
     });
 
     test('makes decisions deterministically with seed', () {
-      final dice = [Die(id: '1', value: 3, held: false)];
+      final dice = [const Die(id: 1, value: 3, held: false)];
       const scoreCard = ScoreCard();
 
-      final decision1 = easyAI.decideHold(
-        dice,
-        scoreCard,
-        rollsLeft: 2,
-      );
+      final decision1 = easyAI
+          .decideKeep(
+              dice: dice, scoreCard: scoreCard, rollCount: 1, maxRolls: 3)
+          .diceToKeep;
 
       // Reset RNG with same seed
       final rng2 = RNG(seed: 42);
@@ -40,30 +39,28 @@ void main() {
         rng: rng2,
       );
 
-      final decision2 = easyAI2.decideHold(
-        dice,
-        scoreCard,
-        rollsLeft: 2,
-      );
+      final decision2 = easyAI2
+          .decideKeep(
+              dice: dice, scoreCard: scoreCard, rollCount: 1, maxRolls: 3)
+          .diceToKeep;
 
       expect(decision1, equals(decision2));
     });
 
     test('holds matching dice greedily', () {
       final dice = [
-        const Die(id: '1', value: 5, held: false),
-        const Die(id: '2', value: 5, held: false),
-        const Die(id: '3', value: 2, held: false),
-        const Die(id: '4', value: 3, held: false),
-        const Die(id: '5', value: 5, held: false),
+        const Die(id: 1, value: 5, held: false),
+        const Die(id: 2, value: 5, held: false),
+        const Die(id: 3, value: 2, held: false),
+        const Die(id: 4, value: 3, held: false),
+        const Die(id: 5, value: 5, held: false),
       ];
       const scoreCard = ScoreCard();
 
-      final holdDecisions = easyAI.decideHold(
-        dice,
-        scoreCard,
-        rollsLeft: 2,
-      );
+      final holdDecisions = easyAI
+          .decideKeep(
+              dice: dice, scoreCard: scoreCard, rollCount: 1, maxRolls: 3)
+          .diceToKeep;
 
       // Should prefer holding the three 5s
       final heldFives = dice
@@ -74,15 +71,16 @@ void main() {
 
     test('chooses category with highest immediate score', () {
       final dice = [
-        const Die(id: '1', value: 6, held: false),
-        const Die(id: '2', value: 6, held: false),
-        const Die(id: '3', value: 6, held: false),
-        const Die(id: '4', value: 6, held: false),
-        const Die(id: '5', value: 6, held: false),
+        const Die(id: 1, value: 6, held: false),
+        const Die(id: 2, value: 6, held: false),
+        const Die(id: 3, value: 6, held: false),
+        const Die(id: 4, value: 6, held: false),
+        const Die(id: 5, value: 6, held: false),
       ];
       const scoreCard = ScoreCard();
 
-      final category = easyAI.decideCategory(dice, scoreCard);
+      final category =
+          easyAI.decideCategory(dice: dice, scoreCard: scoreCard).category;
 
       // Should choose Yahtzee (50 points) over sixes (30 points)
       expect(category, ScoreCategory.yahtzee);
@@ -90,18 +88,19 @@ void main() {
 
     test('avoids choosing filled categories', () {
       final dice = [
-        const Die(id: '1', value: 1, held: false),
-        const Die(id: '2', value: 2, held: false),
-        const Die(id: '3', value: 3, held: false),
-        const Die(id: '4', value: 4, held: false),
-        const Die(id: '5', value: 5, held: false),
+        const Die(id: 1, value: 1, held: false),
+        const Die(id: 2, value: 2, held: false),
+        const Die(id: 3, value: 3, held: false),
+        const Die(id: 4, value: 4, held: false),
+        const Die(id: 5, value: 5, held: false),
       ];
       final scoreCard = const ScoreCard().withEntry(
         ScoreCategory.largeStraight,
         const ScoreEntry(score: 40),
       );
 
-      final category = easyAI.decideCategory(dice, scoreCard);
+      final category =
+          easyAI.decideCategory(dice: dice, scoreCard: scoreCard).category;
 
       // Should not choose already-filled large straight
       expect(category, isNot(ScoreCategory.largeStraight));
@@ -110,7 +109,7 @@ void main() {
     test('completes turn within time budget', () {
       final dice = List.generate(
         5,
-        (i) => Die(id: '$i', value: i + 1, held: false),
+        (i) => Die(id: i, value: i + 1, held: false),
       );
       const scoreCard = ScoreCard();
 
@@ -118,8 +117,11 @@ void main() {
 
       // Simulate multiple decisions
       for (var i = 0; i < 10; i++) {
-        easyAI.decideHold(dice, scoreCard, rollsLeft: 2);
-        easyAI.decideCategory(dice, scoreCard);
+        easyAI
+            .decideKeep(
+                dice: dice, scoreCard: scoreCard, rollCount: 1, maxRolls: 3)
+            .diceToKeep;
+        easyAI.decideCategory(dice: dice, scoreCard: scoreCard).category;
       }
 
       stopwatch.stop();
@@ -142,15 +144,14 @@ void main() {
     test('makes decisions deterministically with seed', () {
       final dice = List.generate(
         5,
-        (i) => Die(id: '$i', value: i + 1, held: false),
+        (i) => Die(id: i, value: i + 1, held: false),
       );
       const scoreCard = ScoreCard();
 
-      final decision1 = normalAI.decideHold(
-        dice,
-        scoreCard,
-        rollsLeft: 2,
-      );
+      final decision1 = normalAI
+          .decideKeep(
+              dice: dice, scoreCard: scoreCard, rollCount: 1, maxRolls: 3)
+          .diceToKeep;
 
       // Reset RNG
       final rng2 = RNG(seed: 42);
@@ -159,22 +160,21 @@ void main() {
         rng: rng2,
       );
 
-      final decision2 = normalAI2.decideHold(
-        dice,
-        scoreCard,
-        rollsLeft: 2,
-      );
+      final decision2 = normalAI2
+          .decideKeep(
+              dice: dice, scoreCard: scoreCard, rollCount: 1, maxRolls: 3)
+          .diceToKeep;
 
       expect(decision1, equals(decision2));
     });
 
     test('considers expected values for category selection', () {
       final dice = [
-        const Die(id: '1', value: 1, held: false),
-        const Die(id: '2', value: 1, held: false),
-        const Die(id: '3', value: 1, held: false),
-        const Die(id: '4', value: 2, held: false),
-        const Die(id: '5', value: 3, held: false),
+        const Die(id: 1, value: 1, held: false),
+        const Die(id: 2, value: 1, held: false),
+        const Die(id: 3, value: 1, held: false),
+        const Die(id: 4, value: 2, held: false),
+        const Die(id: 5, value: 3, held: false),
       ];
       var scoreCard = const ScoreCard();
 
@@ -188,7 +188,8 @@ void main() {
         const ScoreEntry(score: 0, isScratched: true),
       );
 
-      final category = normalAI.decideCategory(dice, scoreCard);
+      final category =
+          normalAI.decideCategory(dice: dice, scoreCard: scoreCard).category;
 
       // Should choose ones (3 points) or three of a kind (8 points)
       expect(
@@ -199,15 +200,16 @@ void main() {
 
     test('avoids scratching high-value categories early', () {
       final dice = [
-        const Die(id: '1', value: 1, held: false),
-        const Die(id: '2', value: 2, held: false),
-        const Die(id: '3', value: 3, held: false),
-        const Die(id: '4', value: 4, held: false),
-        const Die(id: '5', value: 6, held: false),
+        const Die(id: 1, value: 1, held: false),
+        const Die(id: 2, value: 2, held: false),
+        const Die(id: 3, value: 3, held: false),
+        const Die(id: 4, value: 4, held: false),
+        const Die(id: 5, value: 6, held: false),
       ];
       const scoreCard = ScoreCard();
 
-      final category = normalAI.decideCategory(dice, scoreCard);
+      final category =
+          normalAI.decideCategory(dice: dice, scoreCard: scoreCard).category;
 
       // Should NOT scratch Yahtzee or large straight for poor roll
       expect(category, isNot(ScoreCategory.yahtzee));
@@ -217,15 +219,18 @@ void main() {
     test('completes turn within time budget', () {
       final dice = List.generate(
         5,
-        (i) => Die(id: '$i', value: i + 1, held: false),
+        (i) => Die(id: i, value: i + 1, held: false),
       );
       const scoreCard = ScoreCard();
 
       final stopwatch = Stopwatch()..start();
 
       for (var i = 0; i < 10; i++) {
-        normalAI.decideHold(dice, scoreCard, rollsLeft: 2);
-        normalAI.decideCategory(dice, scoreCard);
+        normalAI
+            .decideKeep(
+                dice: dice, scoreCard: scoreCard, rollCount: 1, maxRolls: 3)
+            .diceToKeep;
+        normalAI.decideCategory(dice: dice, scoreCard: scoreCard).category;
       }
 
       stopwatch.stop();
@@ -247,15 +252,14 @@ void main() {
     test('makes decisions deterministically with seed', () {
       final dice = List.generate(
         5,
-        (i) => Die(id: '$i', value: i + 1, held: false),
+        (i) => Die(id: i, value: i + 1, held: false),
       );
       const scoreCard = ScoreCard();
 
-      final decision1 = hardAI.decideHold(
-        dice,
-        scoreCard,
-        rollsLeft: 2,
-      );
+      final decision1 = hardAI
+          .decideKeep(
+              dice: dice, scoreCard: scoreCard, rollCount: 1, maxRolls: 3)
+          .diceToKeep;
 
       // Reset RNG
       final rng2 = RNG(seed: 42);
@@ -264,30 +268,28 @@ void main() {
         rng: rng2,
       );
 
-      final decision2 = hardAI2.decideHold(
-        dice,
-        scoreCard,
-        rollsLeft: 2,
-      );
+      final decision2 = hardAI2
+          .decideKeep(
+              dice: dice, scoreCard: scoreCard, rollCount: 1, maxRolls: 3)
+          .diceToKeep;
 
       expect(decision1, equals(decision2));
     });
 
     test('uses Monte Carlo simulations for better decisions', () {
       final dice = [
-        const Die(id: '1', value: 6, held: false),
-        const Die(id: '2', value: 6, held: false),
-        const Die(id: '3', value: 1, held: false),
-        const Die(id: '4', value: 2, held: false),
-        const Die(id: '5', value: 3, held: false),
+        const Die(id: 1, value: 6, held: false),
+        const Die(id: 2, value: 6, held: false),
+        const Die(id: 3, value: 1, held: false),
+        const Die(id: 4, value: 2, held: false),
+        const Die(id: 5, value: 3, held: false),
       ];
       const scoreCard = ScoreCard();
 
-      final holdDecisions = hardAI.decideHold(
-        dice,
-        scoreCard,
-        rollsLeft: 2,
-      );
+      final holdDecisions = hardAI
+          .decideKeep(
+              dice: dice, scoreCard: scoreCard, rollCount: 1, maxRolls: 3)
+          .diceToKeep;
 
       // Should intelligently hold the two 6s
       final heldSixes = dice
@@ -298,15 +300,16 @@ void main() {
 
     test('makes optimal category choices', () {
       final dice = [
-        const Die(id: '1', value: 1, held: false),
-        const Die(id: '2', value: 2, held: false),
-        const Die(id: '3', value: 3, held: false),
-        const Die(id: '4', value: 4, held: false),
-        const Die(id: '5', value: 5, held: false),
+        const Die(id: 1, value: 1, held: false),
+        const Die(id: 2, value: 2, held: false),
+        const Die(id: 3, value: 3, held: false),
+        const Die(id: 4, value: 4, held: false),
+        const Die(id: 5, value: 5, held: false),
       ];
       const scoreCard = ScoreCard();
 
-      final category = hardAI.decideCategory(dice, scoreCard);
+      final category =
+          hardAI.decideCategory(dice: dice, scoreCard: scoreCard).category;
 
       // Should choose large straight (40 points)
       expect(category, ScoreCategory.largeStraight);
@@ -315,7 +318,7 @@ void main() {
     test('completes turn within time budget', () {
       final dice = List.generate(
         5,
-        (i) => Die(id: '$i', value: i + 1, held: false),
+        (i) => Die(id: i, value: i + 1, held: false),
       );
       const scoreCard = ScoreCard();
 
@@ -323,8 +326,11 @@ void main() {
 
       // Hard AI should still complete within budget despite simulations
       for (var i = 0; i < 5; i++) {
-        hardAI.decideHold(dice, scoreCard, rollsLeft: 2);
-        hardAI.decideCategory(dice, scoreCard);
+        hardAI
+            .decideKeep(
+                dice: dice, scoreCard: scoreCard, rollCount: 1, maxRolls: 3)
+            .diceToKeep;
+        hardAI.decideCategory(dice: dice, scoreCard: scoreCard).category;
       }
 
       stopwatch.stop();
@@ -335,11 +341,11 @@ void main() {
 
     test('considers future rolls when holding dice', () {
       final dice = [
-        const Die(id: '1', value: 5, held: false),
-        const Die(id: '2', value: 5, held: false),
-        const Die(id: '3', value: 5, held: false),
-        const Die(id: '4', value: 1, held: false),
-        const Die(id: '5', value: 2, held: false),
+        const Die(id: 1, value: 5, held: false),
+        const Die(id: 2, value: 5, held: false),
+        const Die(id: 3, value: 5, held: false),
+        const Die(id: 4, value: 1, held: false),
+        const Die(id: 5, value: 2, held: false),
       ];
       var scoreCard = const ScoreCard();
 
@@ -349,11 +355,10 @@ void main() {
         const ScoreEntry(score: 50),
       );
 
-      final holdDecisions = hardAI.decideHold(
-        dice,
-        scoreCard,
-        rollsLeft: 2,
-      );
+      final holdDecisions = hardAI
+          .decideKeep(
+              dice: dice, scoreCard: scoreCard, rollCount: 1, maxRolls: 3)
+          .diceToKeep;
 
       // Should still hold the three 5s for other categories
       final heldFives = dice
@@ -366,28 +371,37 @@ void main() {
   group('AI Difficulty Comparison', () {
     test('different difficulties make different decisions', () {
       final dice = [
-        const Die(id: '1', value: 3, held: false),
-        const Die(id: '2', value: 3, held: false),
-        const Die(id: '3', value: 4, held: false),
-        const Die(id: '4', value: 5, held: false),
-        const Die(id: '5', value: 6, held: false),
+        const Die(id: 1, value: 3, held: false),
+        const Die(id: 2, value: 3, held: false),
+        const Die(id: 3, value: 4, held: false),
+        const Die(id: 4, value: 5, held: false),
+        const Die(id: 5, value: 6, held: false),
       ];
       const scoreCard = ScoreCard();
 
       final easyDecision = EasyAI(
         scoringEngine: scoringEngine,
         rng: RNG(seed: 100),
-      ).decideHold(dice, scoreCard, rollsLeft: 2);
+      )
+          .decideKeep(
+              dice: dice, scoreCard: scoreCard, rollCount: 1, maxRolls: 3)
+          .diceToKeep;
 
       final normalDecision = NormalAI(
         scoringEngine: scoringEngine,
         rng: RNG(seed: 100),
-      ).decideHold(dice, scoreCard, rollsLeft: 2);
+      )
+          .decideKeep(
+              dice: dice, scoreCard: scoreCard, rollCount: 1, maxRolls: 3)
+          .diceToKeep;
 
       final hardDecision = HardAI(
         scoringEngine: scoringEngine,
         rng: RNG(seed: 100),
-      ).decideHold(dice, scoreCard, rollsLeft: 2);
+      )
+          .decideKeep(
+              dice: dice, scoreCard: scoreCard, rollCount: 1, maxRolls: 3)
+          .diceToKeep;
 
       // Decisions should potentially differ based on strategy
       // (though they may occasionally be the same for obvious cases)
@@ -398,11 +412,11 @@ void main() {
   group('Edge Cases', () {
     test('handles last category correctly', () {
       final dice = [
-        const Die(id: '1', value: 1, held: false),
-        const Die(id: '2', value: 2, held: false),
-        const Die(id: '3', value: 3, held: false),
-        const Die(id: '4', value: 4, held: false),
-        const Die(id: '5', value: 5, held: false),
+        const Die(id: 1, value: 1, held: false),
+        const Die(id: 2, value: 2, held: false),
+        const Die(id: 3, value: 3, held: false),
+        const Die(id: 4, value: 4, held: false),
+        const Die(id: 5, value: 5, held: false),
       ];
 
       // Only one category left
@@ -421,7 +435,8 @@ void main() {
         rng: rng,
       );
 
-      final category = easyAI.decideCategory(dice, scoreCard);
+      final category =
+          easyAI.decideCategory(dice: dice, scoreCard: scoreCard).category;
 
       // Must choose the only remaining category
       expect(category, ScoreCategory.chance);
@@ -430,7 +445,7 @@ void main() {
     test('handles all categories filled gracefully', () {
       final dice = List.generate(
         5,
-        (i) => Die(id: '$i', value: i + 1, held: false),
+        (i) => Die(id: i, value: i + 1, held: false),
       );
 
       // All categories filled
@@ -449,7 +464,7 @@ void main() {
 
       // Should throw or return null/default
       expect(
-        () => easyAI.decideCategory(dice, scoreCard),
+        () => easyAI.decideCategory(dice: dice, scoreCard: scoreCard).category,
         throwsA(isA<StateError>()),
       );
     });

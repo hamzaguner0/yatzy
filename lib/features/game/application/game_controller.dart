@@ -149,8 +149,7 @@ class GameController extends StateNotifier<GameState> {
     newScoreboards[state.activePlayer.id] = newCard;
 
     // Check if game is complete
-    final allComplete =
-        newScoreboards.values.every((card) => card.isComplete);
+    final allComplete = newScoreboards.values.every((card) => card.isComplete);
 
     if (allComplete) {
       // Game complete
@@ -176,14 +175,13 @@ class GameController extends StateNotifier<GameState> {
     }
 
     // Update scoreboard with scratched entry
-    final newEntry = const ScoreEntry(score: 0, isScratched: true);
+    const newEntry = ScoreEntry(score: 0, isScratched: true);
     final newCard = activeCard.withEntry(category, newEntry);
     final newScoreboards = Map<String, ScoreCard>.from(state.scoreboards);
     newScoreboards[state.activePlayer.id] = newCard;
 
     // Check if game is complete
-    final allComplete =
-        newScoreboards.values.every((card) => card.isComplete);
+    final allComplete = newScoreboards.values.every((card) => card.isComplete);
 
     if (allComplete) {
       state = state.copyWith(
@@ -197,7 +195,8 @@ class GameController extends StateNotifier<GameState> {
 
   /// Advance to the next turn
   void _advanceTurn(Map<String, ScoreCard> newScoreboards) {
-    final nextPlayerIndex = (state.activePlayerIndex + 1) % state.players.length;
+    final nextPlayerIndex =
+        (state.activePlayerIndex + 1) % state.players.length;
     final isNewRound = nextPlayerIndex == 0;
 
     // Reset dice for next turn
@@ -245,7 +244,8 @@ class GameController extends StateNotifier<GameState> {
     }
 
     // Sort by total score (descending)
-    results.sort((a, b) => b.scoreCard.grandTotal.compareTo(a.scoreCard.grandTotal));
+    results.sort(
+        (a, b) => b.scoreCard.grandTotal.compareTo(a.scoreCard.grandTotal));
 
     return results;
   }

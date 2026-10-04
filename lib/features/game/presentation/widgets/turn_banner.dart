@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yatzy_tr/l10n/app_localizations.dart';
 
 /// A banner widget that displays the current turn information
 class TurnBanner extends StatelessWidget {
@@ -18,7 +18,7 @@ class TurnBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -29,14 +29,14 @@ class TurnBanner extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             colorScheme.primaryContainer,
-            colorScheme.primaryContainer.withOpacity(0.7),
+            colorScheme.primaryContainer.withValues(alpha: 0.7),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.1),
+            color: colorScheme.shadow.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -49,7 +49,7 @@ class TurnBanner extends StatelessWidget {
           Text(
             l10n.gameRound(currentRound, totalRounds),
             style: theme.textTheme.labelMedium?.copyWith(
-              color: colorScheme.onPrimaryContainer.withOpacity(0.8),
+              color: colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
               letterSpacing: 0.5,
             ),
           ),
@@ -91,7 +91,7 @@ class _RollsLeftIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -99,7 +99,7 @@ class _RollsLeftIndicator extends StatelessWidget {
         Text(
           l10n.gameRollsLeft(rollsLeft),
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: color.withOpacity(0.9),
+                color: color.withValues(alpha: 0.9),
               ),
         ),
         const SizedBox(width: 8),
@@ -110,7 +110,7 @@ class _RollsLeftIndicator extends StatelessWidget {
             child: Icon(
               index < rollsLeft ? Icons.circle : Icons.circle_outlined,
               size: 12,
-              color: color.withOpacity(index < rollsLeft ? 0.9 : 0.4),
+              color: color.withValues(alpha: index < rollsLeft ? 0.9 : 0.4),
             ),
           ),
         ),
@@ -132,14 +132,14 @@ class CompactTurnBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant,
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(

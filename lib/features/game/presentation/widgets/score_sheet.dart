@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yatzy_tr/features/game/domain/entities.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yatzy_tr/l10n/app_localizations.dart';
 
 /// Score sheet widget displaying all categories and scores
 class ScoreSheet extends StatelessWidget {
@@ -19,7 +19,7 @@ class ScoreSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Card(
       child: Column(
@@ -78,7 +78,7 @@ class ScoreSheet extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(12),
-      color: theme.colorScheme.primaryContainer.withOpacity(0.5),
+      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
       child: Text(
         title,
         style: theme.textTheme.titleMedium?.copyWith(
@@ -90,7 +90,7 @@ class ScoreSheet extends StatelessWidget {
   }
 
   Widget _buildCategoryRow(BuildContext context, ScoreCategory category) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final entry = scoreCard.getEntry(category);
     final potential = potentialScores[category];
@@ -141,7 +141,7 @@ class ScoreSheet extends StatelessWidget {
     if (canSelect) {
       row = Container(
         decoration: BoxDecoration(
-          color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
           border: Border(
             left: BorderSide(
               color: theme.colorScheme.primary,
@@ -238,7 +238,7 @@ class ScoreSheet extends StatelessWidget {
   Widget _buildTotalRow(BuildContext context, String label, int value) {
     final theme = Theme.of(context);
     return Container(
-      color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -265,7 +265,7 @@ class ScoreSheet extends StatelessWidget {
   }
 
   Widget _buildGrandTotalRow(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Container(
       color: theme.colorScheme.primaryContainer,

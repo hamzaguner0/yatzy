@@ -249,7 +249,8 @@ class NormalAI extends AIPolicy {
 
     // Choose based on score value vs expected value tradeoff
     var bestCategory = potentials.keys.first;
-    var bestScore = _categoryValue(bestCategory, potentials[bestCategory]!, scoreCard);
+    var bestScore =
+        _categoryValue(bestCategory, potentials[bestCategory]!, scoreCard);
 
     for (final entry in potentials.entries) {
       final value = _categoryValue(entry.key, entry.value, scoreCard);

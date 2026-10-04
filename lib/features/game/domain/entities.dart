@@ -1,4 +1,4 @@
-/// Domain entities for Yatzy game
+// Domain entities for Yatzy game
 
 /// Represents a single die
 class Die {
@@ -174,8 +174,8 @@ class ScoreEntry {
     this.score,
     this.isScratched = false,
   }) : assert(
-          score == null || !isScratched,
-          'Cannot have score and be scratched',
+          score == null || score == 0 || !isScratched,
+          'Scratched entries must have no score or score zero',
         );
 
   final int? score;
@@ -220,8 +220,7 @@ class ScoreCard {
 
   ScoreEntry? getEntry(ScoreCategory category) => entries[category];
 
-  bool isFilled(ScoreCategory category) =>
-      entries[category]?.isFilled ?? false;
+  bool isFilled(ScoreCategory category) => entries[category]?.isFilled ?? false;
 
   bool get isComplete => ScoreCategory.values.every(isFilled);
 
@@ -390,7 +389,8 @@ class GameState {
 
   Player get activePlayer => players[activePlayerIndex];
 
-  ScoreCard get activeScoreCard => scoreboards[activePlayer.id] ?? const ScoreCard();
+  ScoreCard get activeScoreCard =>
+      scoreboards[activePlayer.id] ?? const ScoreCard();
 
   bool get canRoll => rollCount < settings.rollsPerTurn;
 
@@ -466,7 +466,9 @@ class GameState {
         'activePlayerIndex': activePlayerIndex,
         'currentRound': currentRound,
         'rollCount': rollCount,
-        'dice': dice.map((d) => {'id': d.id, 'value': d.value, 'held': d.held}).toList(),
+        'dice': dice
+            .map((d) => {'id': d.id, 'value': d.value, 'held': d.held})
+            .toList(),
         'scoreboards': scoreboards.map(
           (key, value) => MapEntry(key, value.toJson()),
         ),

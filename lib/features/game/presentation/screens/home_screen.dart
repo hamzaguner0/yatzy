@@ -1,11 +1,11 @@
+import 'package:yatzy_tr/features/settings/settings_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:yatzy_tr/app/router.dart';
 import 'package:yatzy_tr/features/game/application/game_controller.dart';
-import 'package:yatzy_tr/features/game/data/persistence.dart';
 import 'package:yatzy_tr/features/game/domain/entities.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yatzy_tr/l10n/app_localizations.dart';
 
 /// Home screen with main menu
 class HomeScreen extends ConsumerWidget {
@@ -13,7 +13,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final persistence = ref.watch(persistenceProvider);
     final hasSavedGame = persistence.hasSavedGame();

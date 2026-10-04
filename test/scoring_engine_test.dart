@@ -107,7 +107,7 @@ void main() {
 
     test('returns 0 when no sequence of 4', () {
       expect(engine.scoreFor(ScoreCategory.smallStraight, [1, 2, 3, 5, 6]), 0);
-      expect(engine.scoreFor(ScoreCategory.smallStraight, [1, 3, 4, 5, 6]), 0);
+      expect(engine.scoreFor(ScoreCategory.smallStraight, [1, 2, 4, 4, 6]), 0);
       expect(engine.scoreFor(ScoreCategory.smallStraight, [1, 1, 1, 1, 1]), 0);
       expect(engine.scoreFor(ScoreCategory.smallStraight, [1, 2, 4, 5, 6]), 0);
     });
@@ -178,7 +178,7 @@ void main() {
   group('Potential Scores', () {
     test('calculates potential scores for unfilled categories', () {
       final dice = [3, 3, 3, 4, 5];
-      final scoreCard = const ScoreCard(
+      const scoreCard = ScoreCard(
         entries: {
           ScoreCategory.ones: ScoreEntry(score: 1),
           ScoreCategory.twos: ScoreEntry(score: 0, isScratched: true),

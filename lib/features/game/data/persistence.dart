@@ -87,7 +87,8 @@ void initPersistence(SharedPreferences prefs) {
 
 SharedPreferences getPrefsInstance() {
   if (_prefsInstance == null) {
-    throw StateError('SharedPreferences not initialized. Call initPersistence first.');
+    throw StateError(
+        'SharedPreferences not initialized. Call initPersistence first.');
   }
   return _prefsInstance!;
 }

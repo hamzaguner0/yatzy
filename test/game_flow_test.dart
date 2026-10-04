@@ -55,7 +55,7 @@ void main() {
       expect(controller.state.hasRolled, true);
 
       // Save dice values
-      final firstRoll = controller.state.dice.map((d) => d.value).toList();
+      final _ = controller.state.dice.map((d) => d.value).toList();
 
       // Second roll (all dice should change)
       controller.rollDice();

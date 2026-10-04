@@ -89,24 +89,24 @@ void main() {
     });
 
     test('GameState serialization round trip', () {
-      final state = GameState(
+      const state = GameState(
         phase: GamePhase.playing,
-        players: const [
+        players: [
           Player(id: '1', displayName: 'Player 1'),
           Player(id: '2', displayName: 'Player 2'),
         ],
-        settings: const GameSettings(seed: 42),
+        settings: GameSettings(seed: 42),
         activePlayerIndex: 0,
         currentRound: 3,
         rollCount: 1,
-        dice: const [
+        dice: [
           Die(id: 0, value: 3, held: true),
           Die(id: 1, value: 5, held: false),
           Die(id: 2, value: 2, held: false),
           Die(id: 3, value: 6, held: false),
           Die(id: 4, value: 1, held: false),
         ],
-        scoreboards: const {},
+        scoreboards: {},
       );
 
       final json = state.toJson();

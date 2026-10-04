@@ -5,7 +5,7 @@ import 'package:yatzy_tr/app/router.dart';
 import 'package:yatzy_tr/features/game/application/game_controller.dart';
 import 'package:yatzy_tr/features/game/domain/entities.dart';
 import 'package:yatzy_tr/features/settings/settings_controller.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yatzy_tr/l10n/app_localizations.dart';
 
 /// Setup screen for configuring a new game
 class SetupScreen extends ConsumerStatefulWidget {
@@ -48,7 +48,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
     return Scaffold(

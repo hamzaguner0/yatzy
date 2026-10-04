@@ -20,7 +20,7 @@ class AnimatedDice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final size = 56.0;
+    const size = 56.0;
 
     Widget dieWidget = GestureDetector(
       onTap: canHold ? onTap : null,
@@ -40,7 +40,7 @@ class AnimatedDice extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),

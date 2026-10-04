@@ -6,7 +6,7 @@ import 'package:yatzy_tr/app/router.dart';
 import 'package:yatzy_tr/app/theme.dart';
 import 'package:yatzy_tr/features/game/data/persistence.dart';
 import 'package:yatzy_tr/features/settings/settings_controller.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yatzy_tr/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,7 +60,10 @@ class YatzyApp extends ConsumerWidget {
       builder: (context, child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
-            textScaleFactor: MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.5),
+            textScaler: MediaQuery.textScalerOf(context).clamp(
+              minScaleFactor: 1.0,
+              maxScaleFactor: 1.5,
+            ),
           ),
           child: child!,
         );

@@ -1,5 +1,5 @@
 name: yatzy_tr
-description: A production-ready cross-platform Yatzy game app for Android and iOS
+description: A Flutter Yatzy game prototype with scoring, local persistence and AI opponents
 publish_to: 'none'
 version: 1.0.0+1
 

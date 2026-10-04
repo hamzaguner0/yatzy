@@ -5,13 +5,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:yatzy_tr/app/router.dart';
 import 'package:yatzy_tr/core/rng.dart';
 import 'package:yatzy_tr/features/game/application/game_controller.dart';
-import 'package:yatzy_tr/features/game/data/persistence.dart';
 import 'package:yatzy_tr/features/game/domain/ai.dart';
 import 'package:yatzy_tr/features/game/domain/entities.dart';
 import 'package:yatzy_tr/features/game/presentation/widgets/animated_dice.dart';
 import 'package:yatzy_tr/features/game/presentation/widgets/score_sheet.dart';
 import 'package:yatzy_tr/features/settings/settings_controller.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:yatzy_tr/l10n/app_localizations.dart';
 
 /// Main game screen
 class GameScreen extends ConsumerStatefulWidget {
@@ -35,7 +34,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final gameState = ref.watch(gameStateProvider);
 
     // Navigate to results if game complete
@@ -47,11 +46,12 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
     final activePlayer = gameState.activePlayer;
     final scoreCard = gameState.activeScoreCard;
-    final potentialScores = ref.read(gameStateProvider.notifier).getPotentialScores();
+    final potentialScores =
+        ref.read(gameStateProvider.notifier).getPotentialScores();
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (!didPop) {
           final shouldPop = await _showExitDialog(context);
           if (shouldPop == true && context.mounted) {
@@ -115,10 +115,15 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                             ),
                           ),
 
-                        if (!gameState.canRoll && gameState.hasRolled && !activePlayer.isAI)
+                        if (!gameState.canRoll &&
+                            gameState.hasRolled &&
+                            !activePlayer.isAI)
                           Text(
                             l10n.gameSelectCategory,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
                                   color: Theme.of(context).colorScheme.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -244,7 +249,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       if (decision.shouldRoll && gameState.canRoll) {
         await Future.delayed(const Duration(milliseconds: 800));
         ref.read(gameStateProvider.notifier).rollDice();
-        await ref.read(persistenceProvider).saveGame(ref.read(gameStateProvider));
+        await ref
+            .read(persistenceProvider)
+            .saveGame(ref.read(gameStateProvider));
 
         await Future.delayed(const Duration(milliseconds: 500));
         ref.read(gameStateProvider.notifier).setDiceHold(decision.diceToKeep);
@@ -284,7 +291,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Exit Game?'),
-        content: const Text('Your progress will be saved. You can resume later.'),
+        content:
+            const Text('Your progress will be saved. You can resume later.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
