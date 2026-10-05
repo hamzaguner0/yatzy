@@ -1,11 +1,49 @@
+import 'package:flutter/material.dart';
+import 'package:yatzy_tr/features/game/presentation/widgets/animated_dice.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yatzy_tr/features/game/domain/entities.dart';
 
-/// Basic widget tests to ensure Flutter test framework is working
+// Dice interaction and entity behavior tests
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // This is a basic smoke test to verify test setup
-    expect(1 + 1, 2);
+  testWidgets('die exposes value and held state to accessibility',
+      (tester) async {
+    final semantics = tester.ensureSemantics();
+    try {
+      await tester.pumpWidget(MaterialApp(
+          home: Scaffold(
+              body: AnimatedDice(
+        die: const Die(id: 7, value: 3, held: true),
+        onTap: () {},
+      ))));
+      expect(find.bySemanticsLabel('Die showing 3, held'), findsOneWidget);
+    } finally {
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('dice row sends the selected die ID', (tester) async {
+    int? selected;
+    await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+            body: DiceRow(
+      dice: const [Die(id: 7, value: 3), Die(id: 9, value: 6)],
+      onDieTap: (id) => selected = id,
+    ))));
+    await tester.tap(find.byType(AnimatedDice).last);
+    expect(selected, 9);
+  });
+
+  testWidgets('disabled dice ignore taps', (tester) async {
+    var taps = 0;
+    await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+            body: AnimatedDice(
+      die: const Die(id: 7, value: 3),
+      canHold: false,
+      onTap: () => taps++,
+    ))));
+    await tester.tap(find.byType(AnimatedDice));
+    expect(taps, 0);
   });
 
   group('Entity Tests', () {
